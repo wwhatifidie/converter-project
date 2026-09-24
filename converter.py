@@ -1,8 +1,8 @@
-"""Простой конвертер величин."""
 
+import os
 import sys
 
-ROUND_DIGITS = 2
+ROUND_DIGITS = int(os.environ.get("ROUND_DIGITS", 2))
 
 
 def parse_line(line):
@@ -13,7 +13,6 @@ def parse_line(line):
 
 
 def convert(value, src, dst):
-    """Универсальный конвертер."""
     if src in ("m", "km", "cm") and dst in ("m", "km", "cm"):
         table = {"m": 1, "km": 1000, "cm": 0.01}
         return value * table[src] / table[dst]
@@ -33,7 +32,6 @@ def convert(value, src, dst):
 
 
 def interactive():
-    """Интерактивный режим."""
     print("Конвертер величин")
     print("1 - Длина (m, km, cm)")
     print("2 - Масса (kg, g, t)")
@@ -65,7 +63,6 @@ def interactive():
 
 
 def batch(path):
-    """Пакетный режим: читает файл построчно."""
     with open(path, encoding="utf-8") as f:
         for line in f:
             line = line.strip()
@@ -77,7 +74,6 @@ def batch(path):
 
 
 def main():
-    """Без аргументов — интерактив. С аргументом — пакетный режим."""
     if len(sys.argv) > 1:
         batch(sys.argv[1])
     else:
