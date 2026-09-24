@@ -1,5 +1,4 @@
-
-import sys
+"""Простой конвертер величин."""
 
 
 def parse_line(line):
@@ -10,7 +9,7 @@ def parse_line(line):
 
 
 def convert(value, src, dst):
-    """Универсальный конвертер."""
+    """Универсальный конвертер (тот же, что в интерактиве)."""
     if src in ("m", "km", "cm") and dst in ("m", "km", "cm"):
         table = {"m": 1, "km": 1000, "cm": 0.01}
         return value * table[src] / table[dst]
@@ -29,6 +28,18 @@ def convert(value, src, dst):
     raise ValueError(f"Не знаю: {src} -> {dst}")
 
 
+def batch(path):
+    """Пакетный режим: читает файл построчно."""
+    with open(path, encoding="utf-8") as f:
+        for line in f:
+            line = line.strip()
+            if not line or line.startswith("#"):
+                continue
+            value, src, dst = parse_line(line)
+            result = convert(value, src, dst)          # ← вот здесь вызов
+            print(f"{value} {src} = {round(result, 2)} {dst}")  # ← и печать
+
+
 def interactive():
     """Интерактивный режим."""
     print("Конвертер величин")
@@ -41,27 +52,28 @@ def interactive():
     src = input("Из какой единицы: ").strip()
     dst = input("В какую единицу: ").strip()
 
-    result = convert(value, src, dst)
+    if choice == "1":
+        table = {"m": 1, "km": 1000, "cm": 0.01}
+        result = value * table[src] / table[dst]
+    elif choice == "2":
+        table = {"kg": 1, "g": 0.001, "t": 1000}
+        result = value * table[src] / table[dst]
+    elif choice == "3":
+        if src == "C" and dst == "F":
+            result = value * 9 / 5 + 32
+        elif src == "F" and dst == "C":
+            result = (value - 32) * 5 / 9
+        else:
+            result = value
+    else:
+        print("Неверный выбор")
+        return
+
     print(f"\n{value} {src} = {round(result, 2)} {dst}")
 
 
-def batch(path):
-    """Пакетный режим: читает файл построчно."""
-    with open(path, encoding="utf-8") as f:
-        for line in f:
-            line = line.strip()
-            if not line or line.startswith("#"):
-                continue
-            value, src, dst = parse_line(line)
-            result = convert(value, src, dst)
-            print(f"{value} {src} = {round(result, 2)} {dst}")
-
-
 def main():
-    if len(sys.argv) > 1:
-        batch(sys.argv[1])
-    else:
-        interactive()
+    interactive()
 
 
 if __name__ == "__main__":
