@@ -1,4 +1,7 @@
-"""Простой конвертер величин."""
+
+import sys
+
+ROUND_DIGITS = 3
 
 import sys
 
@@ -33,7 +36,6 @@ def convert(value, src, dst):
 
 
 def interactive():
-    """Интерактивный режим."""
     print("Конвертер величин")
     print("1 - Длина (m, km, cm)")
     print("2 - Масса (kg, g, t)")
