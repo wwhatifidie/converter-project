@@ -1,5 +1,9 @@
 """Простой конвертер величин."""
 
+import sys
+
+ROUND_DIGITS = 2
+
 
 def parse_line(line):
     """'5 km -> m' → (5.0, 'km', 'm')."""
@@ -9,7 +13,7 @@ def parse_line(line):
 
 
 def convert(value, src, dst):
-    """Универсальный конвертер (тот же, что в интерактиве)."""
+    """Универсальный конвертер."""
     if src in ("m", "km", "cm") and dst in ("m", "km", "cm"):
         table = {"m": 1, "km": 1000, "cm": 0.01}
         return value * table[src] / table[dst]
@@ -26,18 +30,6 @@ def convert(value, src, dst):
         return value
 
     raise ValueError(f"Не знаю: {src} -> {dst}")
-
-
-def batch(path):
-    """Пакетный режим: читает файл построчно."""
-    with open(path, encoding="utf-8") as f:
-        for line in f:
-            line = line.strip()
-            if not line or line.startswith("#"):
-                continue
-            value, src, dst = parse_line(line)
-            result = convert(value, src, dst)          # ← вот здесь вызов
-            print(f"{value} {src} = {round(result, 2)} {dst}")  # ← и печать
 
 
 def interactive():
@@ -69,11 +61,27 @@ def interactive():
         print("Неверный выбор")
         return
 
-    print(f"\n{value} {src} = {round(result, 2)} {dst}")
+    print(f"\n{value} {src} = {round(result, ROUND_DIGITS)} {dst}")
+
+
+def batch(path):
+    """Пакетный режим: читает файл построчно."""
+    with open(path, encoding="utf-8") as f:
+        for line in f:
+            line = line.strip()
+            if not line or line.startswith("#"):
+                continue
+            value, src, dst = parse_line(line)
+            result = convert(value, src, dst)
+            print(f"{value} {src} = {round(result, ROUND_DIGITS)} {dst}")
 
 
 def main():
-    interactive()
+    """Без аргументов — интерактив. С аргументом — пакетный режим."""
+    if len(sys.argv) > 1:
+        batch(sys.argv[1])
+    else:
+        interactive()
 
 
 if __name__ == "__main__":
